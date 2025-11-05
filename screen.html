@@ -1,0 +1,117 @@
+<html>
+  <head>
+    <title>Mouse Accuracy Game</title>
+    <style>
+      body {
+        text-align: center;
+        background: #f0f0f0;
+      }
+      #gameArea {
+        position: relative;
+        width: 800px;
+        height: 600px;
+        background: white;
+        margin: 20px auto;
+        border: 2px solid #333;
+      }
+      #info {
+        margin: 20px;
+      }
+      
+      button {
+        padding: 15px 30px;
+        font-size: 20px;
+        cursor: pointer;
+        background: #A020F0;
+        color: white;
+        border: none;
+        border-radius: 5px;
+      }
+      .target {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        background: greenyellow;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      #scoreboard {
+        font-size: 20px;
+        line-height: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Mouse Accuracy Game</h1>
+    <div id="info">
+      <div id="timer"></div>
+      <div id="score"></div>
+    </div>    
+    <button id="startBtn">Start Game</button>    
+    <div id="gameArea"></div>    
+    <div id="scoreboard"></div>    
+    <script>
+      const gameArea = document.getElementById('gameArea');
+      const startBtn = document.getElementById('startBtn');
+      const timer = document.getElementById('timer');
+      const scoreDiv = document.getElementById('score');
+      const scoreboard = document.getElementById('scoreboard');    
+      let timeLeft = 30;
+      let score = 0;
+      let totalTargets = 0;
+      let gameActive = false;      
+      startBtn.onclick = function() {
+        startBtn.style.display = 'none';
+        scoreboard.innerHTML = '';
+        gameActive = true;
+        score = 0;
+        totalTargets = 0;
+        timeLeft = 30;        
+        const timerInterval = setInterval(function() {
+          timeLeft--;
+          timer.textContent = 'Time: ' + timeLeft;                         
+          if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            clearInterval(targetInterval);
+            endGame();
+          }
+        }, 1000);       
+        const targetInterval = setInterval(function() {
+          createTarget();
+        }, 1000);
+      };      
+      function createTarget() {
+        totalTargets++;        
+        const target = document.createElement('div');
+        target.className = 'target';
+        const x = Math.random() * (gameArea.offsetWidth - 50);
+        const y = Math.random() * (gameArea.offsetHeight - 50);       
+        target.style.left = x + 'px';
+        target.style.top = y + 'px';                   
+        target.onclick = function() {
+          if (gameActive) {
+            score++;
+            scoreDiv.textContent = 'Score: ' + score;
+            target.remove();
+          }
+        };                  
+        gameArea.appendChild(target);                   
+        setTimeout(function() {
+          target.remove();
+        }, 2000);
+      }      
+      function endGame() {
+        gameActive = false;
+        gameArea.innerHTML = '';        
+        const accuracy = Math.round((score / totalTargets) * 100);        
+        scoreboard.innerHTML = 
+          '<h2>Game Over!</h2>' +
+          '<p>Total Targets: ' + totalTargets + '</p>' +
+          '<p>Targets Hit: ' + score + '</p>' +
+          '<p>Accuracy: ' + accuracy + '%</p>';
+        
+        startBtn.style.display = 'block';
+      }
+    </script>
+  </body>
+</html>
